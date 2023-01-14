@@ -1,0 +1,11 @@
+const express = require('express')
+const teachingSession = require('./routers/teachingSession')
+const profesor = require('./routers/profesor')
+const student = require('./routers/student')
+const authentication = require('./routers/authentication')
+const mainRouter = express.Router()
+teachingSession(mainRouter)
+profesor(mainRouter)
+student(mainRouter)
+authentication(mainRouter)
+module.exports = mainRouter
