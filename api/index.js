@@ -1,11 +1,7 @@
 const express = require('express')
-const teachingSession = require('./routers/teachingSession')
-const profesor = require('./routers/profesor')
-const student = require('./routers/student')
-const authentication = require('./routers/authentication')
+const subRouters = require('./routers')
 const mainRouter = express.Router()
-teachingSession(mainRouter)
-profesor(mainRouter)
-student(mainRouter)
-authentication(mainRouter)
+for (const subRouterName in subRouters) {
+  subRouters[subRouterName](mainRouter)
+}
 module.exports = mainRouter

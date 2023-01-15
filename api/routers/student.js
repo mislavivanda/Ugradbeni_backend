@@ -1,6 +1,6 @@
 const express = require('express')
 const studentTeachingStatsRouter = express.Router()
-// const studentTeachingStatsController = require('../controlers/studentTeachingStats')
+// const studentTeachingStatsController = require('../controlers')
 module.exports = (mainRouter) => {
-  mainRouter.use('/', studentTeachingStatsRouter)
+  mainRouter.use('/student', studentTeachingStatsRouter)
 }

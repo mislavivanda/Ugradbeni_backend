@@ -11,7 +11,7 @@ module.exports = {
         oib: '385898323',
         email: 'mislavivanda454@gmail.com',
         date_of_birth: '1999/08/11',
-        userID: 2
+        userID: 3
       }])
   },
 

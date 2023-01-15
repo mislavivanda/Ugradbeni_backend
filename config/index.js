@@ -12,5 +12,10 @@ module.exports = {
     slowHashRounds: 10,
     saltSizeBytes: 16, // defined by bcrypt
     hashSizeBytes: 24 // defined by bcrypt
+  },
+  roles: {
+    admin: process.env.ADMIN,
+    profesor: process.env.PROFESOR,
+    student: process.env.STUDENT
   }
 }
