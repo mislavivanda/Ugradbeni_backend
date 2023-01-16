@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-module.exports = class Student {
+module.exports = class Session {
   constructor (models, logger) {
     this.teachingSessionModel = models.teachingSession
     this.logger = logger
@@ -19,6 +19,23 @@ module.exports = class Student {
       return teachingSession
     } catch (error) {
       this.logger.error('Error in function  getTeachingSession' + error)
+      throw (error)
+    }
+  }
+
+  async getActiveTeachingSessionForRoom (roomID) {
+    try {
+      const teachingSession = await this.teachingSessionModel.findOne({
+        where: {
+          [Op.and]: [
+            { roomID },
+            { active: true }
+          ]
+        }
+      })
+      return teachingSession
+    } catch (error) {
+      this.logger.error('Error in function  getActiveTeachingSessionForRoom' + error)
       throw (error)
     }
   }

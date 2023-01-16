@@ -4,12 +4,20 @@ module.exports = class StudentAttendance {
     this.logger = logger
   }
 
-  async createStudentAttendanceRecord (studentID, sessionID) {
+  async createStudentAttendanceRecord (studentID, sessionID, ipAddress, macAddress) {
     try {
-      return await this.studentAttendanceModel.create({
-        start: new Date(),
-        studentID,
-        sessionID
+      await this.studentAttendanceModel.findOrCreate({
+        where: {
+          studentID,
+          sessionID
+        },
+        default: {
+          start: new Date(),
+          studentID,
+          sessionID,
+          ipAddress,
+          macAddress
+        }
       })
     } catch (error) {
       this.logger.error('Error in function createStudentAttendanceRecord' + error)
@@ -39,7 +47,7 @@ module.exports = class StudentAttendance {
         }
       })
     } catch (error) {
-      this.logger.error('Error in function  createStudentAttendanceRecord' + error)
+      this.logger.error('Error in function  updateStudentAttendanceRecord' + error)
       throw (error)
     }
   }

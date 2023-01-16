@@ -1,7 +1,8 @@
 const { nodelogger } = require('../../loaders/loggers')
 const services = require('../../services')
+const teachingSessionPingFactory = require('../../services/teachingSessionPingFactory')
 module.exports = {
-  handleTeachingSessionCall: async (req, res, next) => {
+  handleProfesorTeachingSessionCall: async (req, res, next) => {
     try {
       const { profesorID, subjectName, roomName } = req.body
       let subjectID; let roomID; const teachingType = 'predavanja'
@@ -37,7 +38,7 @@ module.exports = {
         next(error)
       }
     } catch (error) {
-      nodelogger.error('Error in teaching session controler function handleTeachingSessionCall')
+      nodelogger.error('Error in teaching session controler function handleProfesorTeachingSessionCall')
       next(error)
     }
   },
@@ -45,9 +46,10 @@ module.exports = {
     try {
       const sessionStopTime = new Date(); const sessionDurationMinutes = (sessionStopTime.getTime() - new Date(session.start).getTime()) / 60000
       // TODO:zatvori ping servis za zadanu sesiju
+      teachingSessionPingFactory.terminateSessionPing(session.id)
       // spremi za profesora da je odrzao predmet
       try {
-        await services.profesorSubjectStats.incrementProfesorSubjectStatsRecord(session.profesorID, session.subjectID, session.teachingType)
+        await services.profesorSubjectStatsService.incrementProfesorSubjectStatsRecord(session.profesorID, session.subjectID, session.teachingType)
       } catch (error) {
         nodelogger.error('Error while updating profesor stats')
         throw (error)
@@ -55,7 +57,7 @@ module.exports = {
       // DOHVATI SVE STUDENTE KOJI SU SE PRIJAVILI
       let studentAttendanceList = []
       try {
-        studentAttendanceList = await services.studentAttendance.getStudentAttendanceRecordsForSession(session.id)
+        studentAttendanceList = await services.studentAttendanceService.getStudentAttendanceRecordsForSession(session.id)
       } catch (error) {
         nodelogger.error('Error while fetching studentAttendance list')
         throw (error)
@@ -64,7 +66,7 @@ module.exports = {
       // postavi mu end vrijeme kao zadnji timestamp u kojem je bio prisutan
       try {
         for (let i = 0; i < studentAttendanceList.length; i++) {
-          const studentPresentRecords = await services.studentAttendance.studentPresentRecordsForSession(studentAttendanceList[i].studentID, session.id)
+          const studentPresentRecords = await services.studentAttendanceService.studentPresentRecordsForSession(studentAttendanceList[i].studentID, session.id)
           studentAttendanceList[i].sessionMinutes = studentPresentRecords.length
           studentAttendanceList[i].lastRecordedTime = studentPresentRecords[studentPresentRecords.length - 1].time
         }
@@ -75,7 +77,7 @@ module.exports = {
       // postavi end vrijeme za svakog studenta
       try {
         for (let i = 0; i < studentAttendanceList.length; i++) {
-          await services.studentAttendance.updateStudentAttendanceRecord({ end: sessionStopTime }, studentAttendanceList[i].id)
+          await services.studentAttendanceService.updateStudentAttendanceRecord({ end: sessionStopTime }, studentAttendanceList[i].id)
         }
       } catch (error) {
         nodelogger.error('Error while updating studentAttendance end time')
@@ -85,7 +87,7 @@ module.exports = {
       try {
         for (let i = 0; i < studentAttendanceList.length; i++) {
           if (studentAttendanceList[i].sessionMinutes > 0.7 * sessionDurationMinutes) {
-            await services.studentSubjectStats.incrementStudentSubjectStatsRecord(studentAttendanceList[i].studentID, session.subjectID, session.teachingType)
+            await services.studentSubjectStatsService.incrementStudentSubjectStatsRecord(studentAttendanceList[i].studentID, session.subjectID, session.teachingType)
           }
         }
       } catch (error) {
@@ -118,7 +120,7 @@ module.exports = {
           active: true
         })
         // registriraj ping servis sa dobivenim sessionID
-        // teachingSession.id
+        teachingSessionPingFactory.registerSessionPing(teachingSession.id)
       } catch (error) {
         nodelogger.error('Error while creating teaching session')
         throw (error)
@@ -126,6 +128,38 @@ module.exports = {
     } catch (error) {
       nodelogger.error('Error in teaching session controler function openTeachingSession')
       throw (error)
+    }
+  },
+  handleStudentTeachingSessionCall: async (req, res, next) => {
+    try {
+      const { roomName, ipAddress, macAddress, studentID } = req.body
+      // NADI TRENUTNO AKTIVNU SESIJU ZA PROSTORIJU(SAMO 1 ISTVOREMENO)
+      let roomActiveSession, room
+      try {
+        room = await services.room.getRoomByName(roomName)
+      } catch (error) {
+        nodelogger.error('Error while fetching room')
+        throw (error)
+      }
+      try {
+        roomActiveSession = await services.teachingSessionService.getActiveTeachingSessionForRoom(room.id)
+        if (!roomActiveSession) {
+          return
+        }
+      } catch (error) {
+        nodelogger.error('Error while fetching active session for room')
+        throw (error)
+      }
+      try {
+        // KREIRAJ ZAPIS U studentAttendance -> NE SPREMAJ GA AKO JE VEC SPREMLJEN(findOrCreate)
+        await services.studentAttendanceService.createStudentAttendanceRecord(studentID, roomActiveSession.id, ipAddress, macAddress)
+      } catch (error) {
+        nodelogger.error('Error while creating studentAttendance record')
+        throw (error)
+      }
+    } catch (error) {
+      nodelogger.error('Error in teaching session controler function handleStudentTeachingSessionCall')
+      next(error)
     }
   }
 }

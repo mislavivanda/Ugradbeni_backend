@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 const services = require('../../services')
 module.exports = {
   login: async (req, res, next) => {
+    // DODAJ DIO ZA SESIJAMA I KONFIGURIRAJ GA I U express.js FOLDERU
     try {
       const { username, password } = req.body
       let user

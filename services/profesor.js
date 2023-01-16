@@ -1,4 +1,4 @@
-module.exports = class Student {
+module.exports = class Profesor {
   constructor (models, logger) {
     this.profesorModel = models.profesor
     this.logger = logger
