@@ -19,6 +19,9 @@ module.exports = {
       },
       date: {
         type: Sequelize.DATE
+      },
+      active: {
+        type: Sequelize.BOOLEAN
       }
     })
   },

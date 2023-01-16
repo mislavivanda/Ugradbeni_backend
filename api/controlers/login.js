@@ -16,6 +16,7 @@ module.exports = {
       if (user) {
         const correctPassword = await bcrypt.compare(password, user.password)
         if (correctPassword) {
+          // IZDAJ MU JWT TOKEN SA ID-EM?
           if (user.role === parseInt(config.roles.admin)) {
             res.json({
               role: config.roles.admin
@@ -57,7 +58,7 @@ module.exports = {
       }
     } catch (err) {
       nodelogger.error('Error in login controler function login')
-      next(err)// idii na error middleware handler
+      next(err)
     }
   }
 }

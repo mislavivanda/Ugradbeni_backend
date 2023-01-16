@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     teachingType: DataTypes.STRING,
     start: DataTypes.DATE,
     stop: DataTypes.DATE,
-    date: DataTypes.DATE
+    date: DataTypes.DATE,
+    active: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'teachingSession',
