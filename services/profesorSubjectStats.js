@@ -1,13 +1,13 @@
 const { Op } = require('sequelize')
 module.exports = class ProfesorSubjectStats {
   constructor (models, logger) {
-    this.pofesorSubjectStatsModel = models.professorSubjectStats
+    this.professorSubjectStatsModel = models.professorSubjectStats
     this.logger = logger
   }
 
   async incrementProfesorSubjectStatsRecord (profesorID, subjectID, teachingType) {
     try {
-      return await this.professorSubjectStats.increment(
+      return await this.professorSubjectStatsModel.increment(
         teachingType, {
           by: 1,
           where: {

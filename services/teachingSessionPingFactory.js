@@ -23,6 +23,7 @@ class TeachingSessionPingsFactory {
         // REGISTRIRAT ĆE SVE ping POZIVE I NJIHOVE CALLBACKE
         // NE KORISTIMO AWAIT S KOJIM BI CEKALI SVAKI PING DA SE ZAVRSI
         // KAD SE PING ZAVRSI POZVAT CE SE PROSLIJEDENA CALLBACK FUNKCIJA
+        nodelogger.info('Ping Ip adress' + studentAttendanceList[i].ipAddress)
         ping.sys.probe(studentAttendanceList[i].ipAddress, async (isAlive) => {
           try {
             await services.pingService.createPingRecord({
@@ -45,7 +46,7 @@ class TeachingSessionPingsFactory {
   registerSessionPing (sessionID) {
     const newSessionPing = {}
     newSessionPing.sessionID = sessionID
-    newSessionPing.sessionPing = setInterval(() => this.pingSessionStudentsCallback(sessionID), 1000)
+    newSessionPing.sessionPing = setInterval(() => this.pingSessionStudentsCallback(sessionID), 60 * 1000)
     this.activeSessionPings.push(newSessionPing)
   }
 

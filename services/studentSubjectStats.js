@@ -7,7 +7,7 @@ module.exports = class StudentSubjectStats {
 
   async incrementStudentSubjectStatsRecord (studentID, subjectID, typeName) {
     try {
-      return await this.professorSubjectStats.increment(
+      return await this.studentSubjectStatsModel.increment(
         typeName, {
           by: 1,
           where: {

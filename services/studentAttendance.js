@@ -6,19 +6,23 @@ module.exports = class StudentAttendance {
 
   async createStudentAttendanceRecord (studentID, sessionID, ipAddress, macAddress) {
     try {
-      await this.studentAttendanceModel.findOrCreate({
+      const record = await this.studentAttendanceModel.findOne({
         where: {
           studentID,
           sessionID
-        },
-        default: {
+        }
+      })
+      if (!record) {
+        // DODAJ AKO NE POSTOJI
+        await this.studentAttendanceModel.create({
           start: new Date(),
+          end: null,
           studentID,
           sessionID,
           ipAddress,
           macAddress
-        }
-      })
+        })
+      }
     } catch (error) {
       this.logger.error('Error in function createStudentAttendanceRecord' + error)
       throw (error)
@@ -28,7 +32,6 @@ module.exports = class StudentAttendance {
   async getStudentAttendanceRecordsForSession (sessionID) {
     try {
       return await this.studentAttendanceModel.findAll({
-        attributes: ['id', 'studentID', 'start'],
         where: {
           sessionID
         }

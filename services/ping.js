@@ -24,7 +24,7 @@ module.exports = class Ping {
             { present: true }
           ]
         }
-      }).length
+      })
     } catch (error) {
       this.logger.error('Error in function studentPresentRecordsForSession' + error)
       throw (error)
