@@ -1,3 +1,5 @@
 const loginControler = require('./login')
 const teachingSessionController = require('./teachingSession')
-module.exports = { loginControler, teachingSessionController }
+const professorController = require('./profesor')
+const studentController = require('./student')
+module.exports = { loginControler, teachingSessionController, professorController, studentController }

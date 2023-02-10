@@ -1,6 +1,8 @@
 const express = require('express')
+const { professorController } = require('../controlers')
 // const { authenticateProfesor } = require('../middleware/login')
-const profesor = express.Router()
+const profesorRouter = express.Router()
 module.exports = (mainRouter) => {
-  mainRouter.use('/profesor', profesor)
+  mainRouter.use('/profesor', profesorRouter)
+  profesorRouter.post('/teachingstats', professorController.getProfessorTeachingStats)
 }
