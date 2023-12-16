@@ -6,7 +6,7 @@ module.exports = {
       const { studentID } = req.body
       try {
         const studentTeachingStats = await services.studentService.getStudentTeachingStats(studentID)
-        res.json(studentTeachingStats)
+        res.json({ data: studentTeachingStats })
       } catch (error) {
         nodelogger.error('Error while fetching student teaching stats')
         throw error
